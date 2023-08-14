@@ -1,3 +1,5 @@
+#include "libs/matrix.h"
+
 #define EULER_NUMBER_F 2.71828182846
 #define learn_rate 1.0f
 
@@ -12,8 +14,6 @@ typedef struct Network{
     int layer_count;
     Layer* layers;
 } Network;
-
-
 
 void feed_forward(Network net, float* input);
 void calc_layer(Layer layer, float* output_values, int next_layer_size);
