@@ -1,6 +1,7 @@
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "sdllib.h"
-#include "libs/matrix.h"
 
 void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	if(layer_count < 1){
@@ -22,24 +23,24 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 		net->values[i] = 	mat_new(layer_sizes[i], 1);
 		net->biases[i-1] = 	mat_new(layer_sizes[i], 1);
 		net->weights[i-1] = mat_new(layer_sizes[i-1], layer_sizes[i]);
-		if(net->weights[i-1] > largest_weights_matrix->size) {
+		if(net->weights[i-1].size > largest_weights_matrix->size) {
 			largest_weights_matrix = (net->weights + i - 1);
 		}
-		if(net->values[i] > largest_values_matrix->size) {
+		if(net->values[i].size > largest_values_matrix->size) {
 			largest_values_matrix = (net->values + i);
 		}
 	}
 	net->output_values = net->values + (layer_count - 1);
-	net->buffer_1 = mat_new(largest_values_matrix->width, largest_values_matrix->height);
-	net->buffer_2 = mat_new(largest_weights_matrix->width, largest_weights_matrix->height);
+	*(net->buffer_1) = mat_new(largest_values_matrix->width, largest_values_matrix->height);
+	*(net->buffer_2) = mat_new(largest_weights_matrix->width, largest_weights_matrix->height);
 }
 
 void forward(SDLNet* net, Matrix* input){
 	net->values[0] = *input;
 	for(int i = 0; i < net->layer_count - 1; i++){
-		mat_mult_matrix(	(net->values + i), 		(net->weights + i), 	(net->values + i + 1));
-		mat_add_matrix(		(net->values + i + 1), 	(net->biases + i), 		(net->values + i + 1));
-		mat_apply_function(	(net->values + i + 1), 	(net->values + i + 1), 	&sigmoidf);
+		mat_mult_matrix((net->values + i), (net->weights + i), (net->values + i + 1));
+		mat_add_matrix((net->values + i + 1), (net->biases + i), (net->values + i + 1));
+		mat_apply_function((net->values + i + 1), (net->values + i + 1), &sigmoidf);
 	}
 	printf("Forward pass results:\n");
 	mat_print(net->output_values);
@@ -58,7 +59,7 @@ void backward(SDLNet* net, Matrix* input, Matrix* goal_buffer){
 		//Calculate error, store it in goal_buffer
 		mat_subtract_matrix(net->output_values, goal_buffer, goal_buffer);
 		//Apply the derivative of the sigmoid function to the values, store it in buffer_1.
-		mat_apply_function(net->output_values, buffer_1, &sigmoidf_deriv);
+		mat_apply_function(net->output_values, &buffer_1, &sigmoidf_deriv);
 		//Multiply element wise.
 		mat_element_wise_mult(&buffer_1, goal_buffer, &buffer_1);
 		//buffer_1 now contains the derivative with respect to the bias.

@@ -3,7 +3,7 @@ set -e
 name="sdllib"
 output_location=$(realpath "$1")
 flags=""
-files="net.c"
+files="sdllib.c"
 
 declare -A dependencies
 dependencies["matrix"]="https://github.com/smonnnn/Matrix.git"
