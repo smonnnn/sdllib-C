@@ -12,14 +12,10 @@ int main(){
     mat_set(&input, 1, 0, 0.1f);
     mat_set(&input, 2, 0, 0.9f);
 
-    Matrix target = mat_new(1, 1);
-    mat_set(&target, 0, 0, 1.0f);
-
-    printf("Running the network!\n");
-    forward(&network, &input);
+    float target[] = {1.0f};
 
     printf("Training!\n");
-    backward(&network, &input, &target);
+    backward(&network, &input, target);
     
     printf("END\n");
     return 1;
