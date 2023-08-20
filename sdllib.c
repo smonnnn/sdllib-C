@@ -12,17 +12,21 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	net->layer_count = layer_count;
 	net->layer_sizes = layer_sizes;
 
-	net->values = 	calloc((layer_count * 3) - 2 , sizeof(Matrix));
-	net->biases = 	net->values + layer_count;
-	net->weights = 	net->biases + layer_count - 1;
+	net->values = calloc((layer_count * 3), sizeof(Matrix));
+	net->biases = net->values + layer_count;
+	net->weights = net->biases + layer_count - 1;
+	net->buffer_1 = net->weights + layer_count - 1;
+	net->buffer_2 = net->buffer_1 + 1;
 
 	net->values[0] = mat_new(layer_sizes[0], 1);
 	Matrix* largest_weights_matrix = net->weights;
 	Matrix* largest_values_matrix = net->values;
+
 	for(int i = 1; i < layer_count; i++){
 		net->values[i] = 	mat_new(layer_sizes[i], 1);
 		net->biases[i-1] = 	mat_new(layer_sizes[i], 1);
-		net->weights[i-1] = mat_new(layer_sizes[i-1], layer_sizes[i]);
+		net->weights[i-1] = mat_new(layer_sizes[i], layer_sizes[i-1]);
+
 		if(net->weights[i-1].size > largest_weights_matrix->size) {
 			largest_weights_matrix = (net->weights + i - 1);
 		}
@@ -31,8 +35,8 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 		}
 	}
 	net->output_values = net->values + (layer_count - 1);
-	*(net->buffer_1) = mat_new(largest_values_matrix->width, largest_values_matrix->height);
-	*(net->buffer_2) = mat_new(largest_weights_matrix->width, largest_weights_matrix->height);
+	net->buffer_1[0] = mat_new(largest_values_matrix->width, largest_values_matrix->height);
+	net->buffer_2[0] = mat_new(largest_weights_matrix->width, largest_weights_matrix->height);
 }
 
 void forward(SDLNet* net, Matrix* input){
