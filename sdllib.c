@@ -41,15 +41,20 @@ void forward(SDLNet* net, Matrix* input){
 		mat_add_matrix(		(net->values + i + 1), 	(net->biases + i), 		(net->values + i + 1));
 		mat_apply_function(	(net->values + i + 1), 	(net->values + i + 1), 	&sigmoidf);
 	}
+	printf("Forward pass results:\n");
+	mat_print(net->output_values);
 }
 
 void backward(SDLNet* net, Matrix* input, Matrix* goal_buffer){
 	forward(net, input);
 
-	Matrix buffer_1 = mat_resize_unsafe(net->buffer_1, goal->width, goal->height);
-	Matrix buffer_2 = mat_resize_unsafe(net->buffer_2, net->weights[net->layer_count - 1].width, net->weights[net->layer_count - 1].height);
+	Matrix buffer_1;
+	Matrix buffer_2;
 
 	for(int i = net->layer_count - 1; i > 0; i--){
+		buffer_1 = mat_resize_unsafe(net->buffer_1, net->values[i].width, net->values[i].height);
+		buffer_2 = mat_resize_unsafe(net->buffer_2, net->weights[i - 1].width, net->weights[i - 1].height);
+
 		//Calculate error, store it in goal_buffer
 		mat_subtract_matrix(net->output_values, goal_buffer, goal_buffer);
 		//Apply the derivative of the sigmoid function to the values, store it in buffer_1.
@@ -64,25 +69,8 @@ void backward(SDLNet* net, Matrix* input, Matrix* goal_buffer){
 		//Calculate the derivative with respect to the weights. Store it in buffer_2.
 		mat_mult_matrix(&buffer_1, net->weights + i - 1, &buffer_2);
 		//Apply weights.
-		mat_subtract_matrix(net->weights + i - 1, &buffer_2, net->weights + 1 - 1);
-		
+		mat_subtract_matrix(net->weights + i - 1, &buffer_2, net->weights + i - 1);
 	}
-
-	
-	
-	//Calculate error for each output value. error = output - goal
-	mat_subtract_matrix(net->output_values, goal, &buffer_1);
-
-	//Calculate the derivative of the bias with respect to the error.
-	mat_apply_function(net->output_values, &buffer, &sigmoidf_deriv);
-	mat_element_wise_mult(&buffer, goal, &buffer);
-
-	//Apply the derivative to the biases.
-
-	//Calculate the derivative of the error with respect to the weight.
-
-	//Apply the derivative to the weights.
-
 }
 
 float sigmoidf_deriv(float n) {

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 name="sdllib"
 output_location=$(realpath "$1")
 flags=""

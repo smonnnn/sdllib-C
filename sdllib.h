@@ -3,10 +3,10 @@
 #define EULER_NUMBER_F 2.71828182846
 
 typedef struct SDLNet{
-	int layer_count
+	int layer_count;
 	int* layer_sizes;
 	Matrix* buffer_1;
-	Matrix* buffer_2
+	Matrix* buffer_2;
 	Matrix* values;
 	Matrix* biases;
 	Matrix* weights;
