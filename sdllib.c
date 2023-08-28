@@ -59,45 +59,55 @@ void forward(SDLNet* net, Matrix* input){
 }
 
 void backward(SDLNet* net, Matrix* input, Matrix* target){
+	Matrix *b1, *b2, *b3, *v, *vp, *w, *b;
+	b1 = net->buffer_1;
+	b2 = net->buffer_2;
+	b3 = net->buffer_3;
+
 	forward(net, input);
 
 	//Calculate error, store it.
-	mat_resize_unsafe(net->buffer_3, net->output_values->width, net->output_values->height);
-	mat_subtract_matrix(net->output_values, target, net->buffer_3);
+	mat_resize_unsafe(b3, net->output_values->width, net->output_values->height);
+	mat_subtract_matrix(net->output_values, target, b3);
 
 	net->total_error = 0.0f;
-	for(int i = 0; i < net->buffer_3->size; i++){
-		net->total_error += net->buffer_3->data[i] * net->buffer_3->data[i];
+	for(int i = 0; i < b3->size; i++){
+		net->total_error += b3->data[i] * b3->data[i];
 	}
-
+	
 	for(int i = net->layer_count - 1; i > 0; i--){
-		mat_resize_unsafe(net->buffer_1, net->values[i].width, net->values[i].height);
-		mat_resize_unsafe(net->buffer_2, net->weights[i - 1].width, net->weights[i - 1].height);
+		v = net->values + i;
+		vp = net->values + i - 1;
+		w = net->weights + i - 1;
+		b = net->biases + i - 1;
+
+		mat_resize_unsafe(b1, v->width, v->height);
+		mat_resize_unsafe(b2, w->width, w->height);
 		
 		//Apply the derivative of the sigmoid function to the values, store it in buffer_1.
-		mat_apply_function(net->values + i, net->buffer_1, &sigmoidf_deriv);
+		mat_apply_function(v, b1, &sigmoidf_deriv);
 
 		//Multiply element wise.
-		mat_element_wise_mult(net->buffer_1, net->buffer_3, net->buffer_1);
+		mat_element_wise_mult(b1, b3, b1);
 		//buffer_1 now contains the derivative with respect to the bias.
 
 		//Apply biases.
-		mat_subtract_matrix(net->biases + i - 1, net->buffer_1, net->biases + i - 1);
+		mat_subtract_matrix(b, b1, b);
 		
-		(net->buffer_1)->width = (net->buffer_1)->height;
-		(net->buffer_1)->height = 1;
+		b1->width = b1->height;
+		b1->height = 1;
 		
 		//Calculate the derivative with respect to the weights. Store it in buffer_2.
-		mat_mult_matrix(net->values + i - 1, net->buffer_1, net->buffer_2);
+		mat_mult_matrix(vp, b1, b2);
 
 		//Apply weights.
-		mat_subtract_matrix(net->weights + i - 1, net->buffer_2, net->weights + i - 1);
+		mat_subtract_matrix(w, b2, w);
 		
 		//Calculate next layer's error.
-		mat_resize_unsafe(net->buffer_3, net->values[i - 1].width, net->values[i - 1].height);
-		mat_mult_matrix(net->buffer_1, net->weights + i - 1, net->buffer_3);
-		(net->buffer_1)->height = (net->buffer_1)->width;
-		(net->buffer_1)->width = 1;
+		mat_resize_unsafe(b3, vp->width, vp->height);
+		mat_mult_matrix(b1, w, b3);
+		b1->height = b1->width;
+		b1->width = 1;
 	}
 }
 
