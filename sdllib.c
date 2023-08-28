@@ -3,14 +3,6 @@
 #include <stdlib.h>
 #include "sdllib.h"
 
-float calculate_total_error(Matrix* buffer_3){
-	float error = 0.0f;
-	for(int i = 0; i < buffer_3->size; i++){
-		error += buffer_3->data[i] * buffer_3->data[i];
-	}
-	return error;
-}
-
 void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	if(layer_count < 1){
 		printf("Layer count cannot be smaller than 1!\n");
@@ -65,7 +57,11 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 	//Calculate error, store it.
 	mat_resize_unsafe(net->buffer_3, net->output_values->width, net->output_values->height);
 	mat_subtract_matrix(net->output_values, target, net->buffer_3);
-	net->total_error = calculate_total_error(net->buffer_3);
+
+	net->total_error = 0.0f;
+	for(int i = 0; i < buffer_3->size; i++){
+		error += buffer_3->data[i] * buffer_3->data[i];
+	}
 
 	for(int i = net->layer_count - 1; i > 0; i--){
 		mat_resize_unsafe(net->buffer_1, net->values[i].width, net->values[i].height);
