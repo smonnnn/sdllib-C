@@ -18,6 +18,7 @@ typedef struct SDLNet{
 void forward(SDLNet* net, Matrix* input);
 void backward(SDLNet* net, Matrix* input, Matrix* target);
 void init_network(SDLNet* net, int* layer_sizes, int layer_count);
+void delete_network(SDLNet* net);
 float sigmoidf_deriv(float n);
 float sigmoidf(float n);
 void net_print_debug(SDLNet* net, int layer);

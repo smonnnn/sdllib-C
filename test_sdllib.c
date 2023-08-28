@@ -28,5 +28,7 @@ int main(){
     }
     
     printf("END\n");
+
+    delete_network(&network);
     return 1;
 }

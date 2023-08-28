@@ -42,6 +42,13 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	net->buffer_3[0] = mat_new(largest_values_matrix->width, largest_values_matrix->height);
 }
 
+void delete_network(SDLNet* net){
+	for(int i = 0; i < (net->layer_count * 3) + 1; i++){
+		mat_delete(net->values + i);
+	}
+	free(net->values);
+}
+
 void forward(SDLNet* net, Matrix* input){
 	net->values[0] = *input;
 	for(int i = 0; i < net->layer_count - 1; i++){
@@ -59,8 +66,8 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 	mat_subtract_matrix(net->output_values, target, net->buffer_3);
 
 	net->total_error = 0.0f;
-	for(int i = 0; i < buffer_3->size; i++){
-		error += buffer_3->data[i] * buffer_3->data[i];
+	for(int i = 0; i < net->buffer_3->size; i++){
+		net->total_error += net->buffer_3->data[i] * net->buffer_3->data[i];
 	}
 
 	for(int i = net->layer_count - 1; i > 0; i--){
