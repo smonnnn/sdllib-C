@@ -19,7 +19,7 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	net->buffer_2 = net->buffer_1 + 1;
 	net->buffer_3 = net->buffer_1 + 2;
 
-	net->values[0] = mat_new(layer_sizes[0], 1);
+	net->values[0] = mat_new(1, layer_sizes[0]);
 	Matrix* largest_weights_matrix = net->weights;
 	Matrix* largest_values_matrix = net->values;
 
