@@ -1,2 +1,6 @@
 # sdllib
-Simple deep learning library
+Simple library for deep learning inference and training.
+Uses my own simple matrix library.
+
+To compile the library, simply run the bash script "compile.sh".
+There's an example bash script called "run.sh" that compiles the dependencies and a test file to an executable binary.
