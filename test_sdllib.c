@@ -19,9 +19,12 @@ int main(){
     Matrix target = mat_new_from_data(1, 2, t);
 
     printf("Training!\n");
-    for(int i = 0; i < 100; i++){
+    int i = 0;
+    while(network.total_error > 0.01f){
         printf("E:%i\n", i);
         backward(&network, &input, &target);
+        printf("Total error: %7.2f\n", network.total_error);
+        i++;
     }
     
     printf("END\n");

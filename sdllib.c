@@ -3,12 +3,21 @@
 #include <stdlib.h>
 #include "sdllib.h"
 
+float calculate_total_error(Matrix* buffer_3){
+	float error = 0.0f;
+	for(int i = 0; i < buffer_3->size; i++){
+		error += buffer_3->data[i] * buffer_3->data[i];
+	}
+	return error;
+}
+
 void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	if(layer_count < 1){
 		printf("Layer count cannot be smaller than 1!\n");
 		exit(1);
 	}
 
+	net->total_error = 1.0f;
 	net->layer_count = layer_count;
 	net->layer_sizes = layer_sizes;
 
@@ -48,8 +57,6 @@ void forward(SDLNet* net, Matrix* input){
 		mat_add_matrix((net->values + i + 1), (net->biases + i), (net->values + i + 1));
 		mat_apply_function((net->values + i + 1), (net->values + i + 1), &sigmoidf);
 	}
-	printf("Forward pass results:\n");
-	mat_print(net->output_values);
 }
 
 void backward(SDLNet* net, Matrix* input, Matrix* target){
@@ -58,6 +65,7 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 	//Calculate error, store it.
 	mat_resize_unsafe(net->buffer_3, net->output_values->width, net->output_values->height);
 	mat_subtract_matrix(net->output_values, target, net->buffer_3);
+	net->total_error = calculate_total_error(net->buffer_3);
 
 	for(int i = net->layer_count - 1; i > 0; i--){
 		mat_resize_unsafe(net->buffer_1, net->values[i].width, net->values[i].height);
@@ -78,7 +86,7 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 		
 		//Calculate the derivative with respect to the weights. Store it in buffer_2.
 		mat_mult_matrix(net->values + i - 1, net->buffer_1, net->buffer_2);
-		
+
 		//Apply weights.
 		mat_subtract_matrix(net->weights + i - 1, net->buffer_2, net->weights + i - 1);
 		

@@ -3,6 +3,7 @@
 #define EULER_NUMBER_F 2.71828182846
 
 typedef struct SDLNet{
+	float total_error;
 	int layer_count;
 	int* layer_sizes;
 	Matrix* buffer_1; //Used as temp buffer for bias derivatives.
