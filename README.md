@@ -7,4 +7,5 @@ There's an example bash script called "run.sh" that compiles the dependencies an
 
 TODO:
 >figure out how to not rotate buffer_1.
+>
 >save and load a network from disk.
