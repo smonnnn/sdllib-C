@@ -9,3 +9,5 @@ There's an example bash script called "run.sh" that compiles the dependencies an
 Figure out how to not rotate buffer_1.
 
 Save and load a network from disk.
+
+Make code look nice :^)
