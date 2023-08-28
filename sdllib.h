@@ -5,9 +5,9 @@
 typedef struct SDLNet{
 	int layer_count;
 	int* layer_sizes;
-	Matrix* buffer_1;
-	Matrix* buffer_2;
-	Matrix* buffer_3;
+	Matrix* buffer_1; //Used as temp buffer for bias derivatives.
+	Matrix* buffer_2; //Used as temp buffer for weight derivatives.
+	Matrix* buffer_3; //Used as temp buffer for error values.
 	Matrix* values;
 	Matrix* biases;
 	Matrix* weights;
@@ -15,7 +15,8 @@ typedef struct SDLNet{
 } SDLNet;
 
 void forward(SDLNet* net, Matrix* input);
-void backward(SDLNet* net, Matrix* input, float* target);
+void backward(SDLNet* net, Matrix* input, Matrix* target);
 void init_network(SDLNet* net, int* layer_sizes, int layer_count);
 float sigmoidf_deriv(float n);
 float sigmoidf(float n);
+void net_print_debug(SDLNet* net, int layer);
