@@ -25,8 +25,8 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 
 	for(int i = 1; i < layer_count; i++){
 		net->values[i] = 	mat_new(1, layer_sizes[i]);
-		net->biases[i-1] = 	mat_new(1, layer_sizes[i]);
-		net->weights[i-1] = mat_new(layer_sizes[i-1], layer_sizes[i]);
+		net->biases[i-1] = 	mat_new_random_10(1, layer_sizes[i]);
+		net->weights[i-1] = mat_new_random_10(layer_sizes[i-1], layer_sizes[i]);
 
 		if(net->weights[i-1].size > largest_weights_matrix->size) {
 			largest_weights_matrix = (net->weights + i - 1);
