@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "sdllib.h"
 
+//Used to initialise a new network.
 void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	if(layer_count < 1){
 		printf("Layer count cannot be smaller than 1!\n");
@@ -42,6 +43,7 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	net->buffer_3[0] = mat_new(largest_values_matrix->width, largest_values_matrix->height);
 }
 
+//Used to delete a network after usage.
 void delete_network(SDLNet* net){
 	for(int i = 0; i < (net->layer_count * 3) + 1; i++){
 		mat_delete(net->values + i);
@@ -49,6 +51,7 @@ void delete_network(SDLNet* net){
 	free(net->values);
 }
 
+//Propagate forward through the network.
 void forward(SDLNet* net, Matrix* input){
 	net->values[0] = *input;
 	for(int i = 0; i < net->layer_count - 1; i++){
@@ -58,6 +61,7 @@ void forward(SDLNet* net, Matrix* input){
 	}
 }
 
+//Propagate backward through the network.
 void backward(SDLNet* net, Matrix* input, Matrix* target){
 	Matrix *b1, *b2, *b3, *v, *vp, *w, *b;
 	b1 = net->buffer_1;
@@ -116,6 +120,7 @@ float sigmoidf(float n) {
     return (1 / (1 + powl(EULER_NUMBER_F, -n)));
 }
 
+//Print a layer from the network.
 void net_print_debug(SDLNet* net, int layer){
 	if(layer >= net->layer_count) return;
 	printf("Layer: %i\n", layer);
