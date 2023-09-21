@@ -94,9 +94,7 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 		//Apply biases.
 		mat_subtract_matrix(b, b1, b);
 		
-		b1->width = b1->height;
-		b1->height = 1;
-		
+		mat_transpose(b1);		
 		//Calculate the derivative with respect to the weights. Store it in buffer_2.
 		mat_mult_matrix(vp, b1, b2);
 
@@ -106,8 +104,7 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 		//Calculate next layer's error.
 		mat_resize_unsafe(b3, vp->width, vp->height);
 		mat_mult_matrix(b1, w, b3);
-		b1->height = b1->width;
-		b1->width = 1;
+		mat_transpose(b1);
 	}
 }
 
