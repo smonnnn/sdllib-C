@@ -14,20 +14,20 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 	net->layer_count = layer_count;
 	net->layer_sizes = layer_sizes;
 
-	net->values = calloc((layer_count * 3) + 1, sizeof(Matrix));
-	net->biases = net->values + layer_count;
-	net->weights = net->biases + layer_count - 1;
+	net->values   = calloc((layer_count * 3) + 1, sizeof(Matrix));
+	net->biases   = net->values + layer_count;
+	net->weights  = net->biases + layer_count - 1;
 	net->buffer_1 = net->weights + layer_count - 1;
 	net->buffer_2 = net->buffer_1 + 1;
 	net->buffer_3 = net->buffer_1 + 2;
 
 	net->values[0] = mat_new(1, layer_sizes[0]);
-	Matrix* largest_weights_matrix = net->weights;
-	Matrix* largest_values_matrix = net->values;
+	Matrix* largest_weights_matrix  = net->weights;
+	Matrix* largest_values_matrix   = net->values;
 
 	for(int i = 1; i < layer_count; i++){
-		net->values[i] = 	mat_new(1, layer_sizes[i]);
-		net->biases[i-1] = 	mat_new_random_10(1, layer_sizes[i]);
+		net->values[i]    = mat_new(1, layer_sizes[i]);
+		net->biases[i-1]  = mat_new_random_10(1, layer_sizes[i]);
 		net->weights[i-1] = mat_new_random_10(layer_sizes[i-1], layer_sizes[i]);
 
 		if(net->weights[i-1].size > largest_weights_matrix->size) {
@@ -37,10 +37,10 @@ void init_network(SDLNet* net, int* layer_sizes, int layer_count){
 			largest_values_matrix = (net->values + i);
 		}
 	}
-	net->output_values = net->values + (layer_count - 1);
-	net->buffer_1[0] = mat_new(largest_values_matrix->width, largest_values_matrix->height);
-	net->buffer_2[0] = mat_new(largest_weights_matrix->width, largest_weights_matrix->height);
-	net->buffer_3[0] = mat_new(largest_values_matrix->width, largest_values_matrix->height);
+	net->output_values  = net->values + (layer_count - 1);
+	net->buffer_1[0]    = mat_new(largest_values_matrix->width, largest_values_matrix->height);
+	net->buffer_2[0]    = mat_new(largest_weights_matrix->width, largest_weights_matrix->height);
+	net->buffer_3[0]    = mat_new(largest_values_matrix->width, largest_values_matrix->height);
 }
 
 //Used to delete a network after usage.
@@ -108,6 +108,7 @@ void backward(SDLNet* net, Matrix* input, Matrix* target){
 		//Calculate next layer's error.
 		mat_resize_unsafe(b3, vp->width, vp->height);
 		mat_mult_matrix(b1, w, b3);
+    mat_subtract_matrix(vp, b3, b3);
 		mat_transpose(b1);
 	}
 }
